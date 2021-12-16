@@ -13,6 +13,12 @@ application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -28,4 +34,13 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    // KMongo
+    implementation("org.litote.kmongo:kmongo:4.4.0")
+
+    // Koin Core features
+    implementation ("io.insert-koin:koin-core:3.1.4")
+    testImplementation ("io.insert-koin:koin-test:3.1.4")
+    implementation ("io.insert-koin:koin-ktor:3.1.4")
+    implementation ("io.insert-koin:koin-logger-slf4j:3.1.4")
 }

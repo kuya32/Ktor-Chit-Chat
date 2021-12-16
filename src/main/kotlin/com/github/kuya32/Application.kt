@@ -2,6 +2,7 @@ package com.github.kuya32
 
 import io.ktor.application.*
 import com.github.kuya32.plugins.*
+import org.koin.ktor.ext.Koin
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
@@ -9,9 +10,12 @@ fun main(args: Array<String>): Unit =
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
     configureRouting()
-    configureSockets()
+//    configureSockets()
     configureSerialization()
     configureMonitoring()
     configureHTTP()
     configureSecurity()
+    install(Koin) {
+        
+    }
 }
