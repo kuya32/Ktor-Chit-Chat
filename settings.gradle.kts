@@ -1,0 +1,1 @@
+rootProject.name = "com.github.kuya32.chitchat"
