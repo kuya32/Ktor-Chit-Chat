@@ -1,6 +1,8 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val koin_version: String by project
+val kmongo_version: String by project
 
 plugins {
     application
@@ -36,11 +38,16 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     // KMongo
-    implementation("org.litote.kmongo:kmongo:4.4.0")
+    implementation("org.litote.kmongo:kmongo:$kmongo_version")
+    implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
 
     // Koin Core features
-    implementation ("io.insert-koin:koin-core:3.1.4")
-    testImplementation ("io.insert-koin:koin-test:3.1.4")
-    implementation ("io.insert-koin:koin-ktor:3.1.4")
-    implementation ("io.insert-koin:koin-logger-slf4j:3.1.4")
+    implementation ("io.insert-koin:koin-core:$koin_version")
+    implementation ("io.insert-koin:koin-ktor:$koin_version")
+    implementation ("io.insert-koin:koin-logger-slf4j:$koin_version")
+
+    // Test dependencies
+
+    // Koin
+    testImplementation ("io.insert-koin:koin-test:$koin_version")
 }
