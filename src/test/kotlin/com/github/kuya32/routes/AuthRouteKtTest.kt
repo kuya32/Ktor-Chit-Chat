@@ -23,7 +23,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-internal class CreateUserRouteKtTest : KoinTest {
+internal class AuthRouteKtTest : KoinTest {
 
     private val userRepository by inject<FakeUserRepository>()
 
@@ -34,6 +34,11 @@ internal class CreateUserRouteKtTest : KoinTest {
         startKoin {
             modules(testModule)
         }
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test
