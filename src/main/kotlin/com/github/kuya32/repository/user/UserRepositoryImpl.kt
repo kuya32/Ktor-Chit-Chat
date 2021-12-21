@@ -1,4 +1,4 @@
-package com.github.kuya32.data.repository.user
+package com.github.kuya32.repository.user
 
 import com.github.kuya32.data.models.User
 import org.litote.kmongo.coroutine.CoroutineDatabase

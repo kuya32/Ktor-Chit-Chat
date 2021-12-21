@@ -1,7 +1,7 @@
 package com.github.kuya32.di
 
-import com.github.kuya32.data.repository.user.UserRepository
-import com.github.kuya32.data.repository.user.UserRepositoryImpl
+import com.github.kuya32.repository.user.UserRepository
+import com.github.kuya32.repository.user.UserRepositoryImpl
 import com.github.kuya32.util.Constants
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine

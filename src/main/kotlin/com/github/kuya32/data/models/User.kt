@@ -15,5 +15,5 @@ data class User(
     val skills: List<String> = listOf(),
     val githubUrl: String?,
     val instagramUrl: String?,
-    val linkedInUrl: String
+    val linkedInUrl: String?
 )

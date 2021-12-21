@@ -1,9 +1,9 @@
 package com.github.kuya32.routes
 
-import com.github.kuya32.data.repository.user.UserRepository
+import com.github.kuya32.data.models.User
+import com.github.kuya32.repository.user.UserRepository
 import com.github.kuya32.data.requests.CreateAccountRequest
 import com.github.kuya32.data.responses.BasicApiResponse
-import com.github.kuya32.util.ApiResponseMessages
 import com.github.kuya32.util.ApiResponseMessages.FIELDS_BLANK
 import com.github.kuya32.util.ApiResponseMessages.USER_ALREADY_EXISTS
 import io.ktor.application.*
@@ -11,10 +11,8 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.koin.ktor.ext.inject
 
-fun Route.userRoutes() {
-    val userRepository: UserRepository by inject()
+fun Route.createUser(userRepository: UserRepository) {
     route("/api/user/create") {
         post {
             val request = call.receiveOrNull<CreateAccountRequest>() ?: kotlin.run {
@@ -35,6 +33,18 @@ fun Route.userRoutes() {
                 )
                 return@post
             }
+            userRepository.createdUser(
+                User(
+                    email = request.email,
+                    username = request.username,
+                    password = request.password,
+                    profileImageUrl = "",
+                    bio = "",
+                    githubUrl = null,
+                    instagramUrl = null,
+                    linkedInUrl = null
+                )
+            )
             call.respond(
                 BasicApiResponse(true)
             )

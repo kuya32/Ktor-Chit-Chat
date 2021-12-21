@@ -1,16 +1,14 @@
 package com.github.kuya32.plugins
 
-import com.github.kuya32.routes.userRoutes
+import com.github.kuya32.repository.user.UserRepository
+import com.github.kuya32.routes.createUser
 import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.content.*
-import io.ktor.http.content.*
 import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
+import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
+    val userRepository: UserRepository by inject()
     routing {
-        userRoutes()
+        createUser(userRepository)
     }
 }
