@@ -6,6 +6,7 @@ import com.github.kuya32.data.requests.CreateAccountRequest
 import com.github.kuya32.data.requests.LoginRequest
 import com.github.kuya32.data.responses.BasicApiResponse
 import com.github.kuya32.util.ApiResponseMessages.FIELDS_BLANK
+import com.github.kuya32.util.ApiResponseMessages.INVALID_CREDENTIALS
 import com.github.kuya32.util.ApiResponseMessages.USER_ALREADY_EXISTS
 import io.ktor.application.*
 import io.ktor.http.*
@@ -61,6 +62,27 @@ fun Route.loginUser(userRepository: UserRepository) {
         if (request.email.isBlank() || request.password.isBlank()) {
             call.respond(HttpStatusCode.BadRequest)
             return@post
+        }
+
+        val isCorrectPassword = userRepository.doesPasswordForUserMatch(
+            email = request.email,
+            enteredPassword = request.password
+        )
+        if (isCorrectPassword) {
+            call.respond(
+                HttpStatusCode.OK,
+                BasicApiResponse(
+                    successful = true
+                )
+            )
+        } else {
+            call.respond(
+                HttpStatusCode.OK,
+                BasicApiResponse(
+                    successful = false,
+                    message = INVALID_CREDENTIALS
+                )
+            )
         }
     }
 }

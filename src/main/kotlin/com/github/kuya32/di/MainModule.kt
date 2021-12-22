@@ -1,5 +1,7 @@
 package com.github.kuya32.di
 
+import com.github.kuya32.repository.follow.FollowRepository
+import com.github.kuya32.repository.follow.FollowRepositoryImpl
 import com.github.kuya32.repository.user.UserRepository
 import com.github.kuya32.repository.user.UserRepositoryImpl
 import com.github.kuya32.util.Constants
@@ -14,5 +16,8 @@ val mainModule = module {
     }
     single<UserRepository> {
         UserRepositoryImpl(get())
+    }
+    single<FollowRepository> {
+        FollowRepositoryImpl(get())
     }
 }
