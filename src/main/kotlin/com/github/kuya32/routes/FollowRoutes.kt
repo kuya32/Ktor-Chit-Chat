@@ -3,6 +3,7 @@ package com.github.kuya32.routes
 import com.github.kuya32.data.requests.FollowUpdateRequest
 import com.github.kuya32.data.responses.BasicApiResponse
 import com.github.kuya32.repository.follow.FollowRepository
+import com.github.kuya32.service.FollowService
 import com.github.kuya32.util.ApiResponseMessages.USER_NOT_FOUND
 import io.ktor.application.*
 import io.ktor.http.*
@@ -11,7 +12,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.followUser(
-    followingRepository: FollowRepository
+    followService: FollowService
 ) {
     post("/api/following/follow") {
         val request = call.receiveOrNull<FollowUpdateRequest>() ?: kotlin.run {
@@ -19,11 +20,7 @@ fun Route.followUser(
             return@post
         }
 
-        val didUserExist = followingRepository.followUserIfExists(
-            request.followingUserId,
-            request.followedUserId
-        )
-        if (didUserExist) {
+        if (followService.followUserIfExists(request)) {
             call.respond(
                 HttpStatusCode.OK,
                 BasicApiResponse(
@@ -43,7 +40,7 @@ fun Route.followUser(
 }
 
 fun Route.unfollowUser(
-    followingRepository: FollowRepository
+    followService: FollowService
 ) {
     delete("/api/following/unfollow") {
         val request = call.receiveOrNull<FollowUpdateRequest>() ?: kotlin.run {
@@ -51,11 +48,7 @@ fun Route.unfollowUser(
             return@delete
         }
 
-        val didUserExist = followingRepository.unfollowUserIfExists(
-            request.followingUserId,
-            request.followedUserId
-        )
-        if (didUserExist) {
+        if (followService.unfollowUserIfExists(request)) {
             call.respond(
                 HttpStatusCode.OK,
                 BasicApiResponse(
