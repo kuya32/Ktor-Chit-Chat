@@ -17,7 +17,7 @@ class FollowRepositoryImpl(
         followingUserId: String,
         followedUserId: String
     ): Boolean {
-        val doesFollowingUserExist = users.findOneById(followedUserId) != null
+        val doesFollowingUserExist = users.findOneById(followingUserId) != null
         val doesFollowedUserExist = users.findOneById(followedUserId) != null
         if (!doesFollowingUserExist || !doesFollowedUserExist) {
             return false
