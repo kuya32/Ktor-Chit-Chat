@@ -4,5 +4,5 @@ object Constants {
 
     const val DATABASE_NAME = "chit_chat_db"
 
-    const val DEFAULT_POST_PAGE_SIZE = 15
+    const val DEFAULT_PAGE_SIZE = 15
 }
