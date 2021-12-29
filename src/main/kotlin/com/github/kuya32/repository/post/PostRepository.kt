@@ -14,4 +14,6 @@ interface PostRepository {
         page: Int,
         pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<Post>
+
+    suspend fun getPost(postId: String): Post?
 }

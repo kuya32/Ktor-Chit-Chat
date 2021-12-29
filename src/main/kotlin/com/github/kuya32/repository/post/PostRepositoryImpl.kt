@@ -25,6 +25,7 @@ class PostRepositoryImpl(
         TODO("Not yet implemented")
     }
 
+
 //    override suspend fun getPostsByFollow(
 //        ownUserId: String,
 //        page: Int,
@@ -37,4 +38,8 @@ class PostRepositoryImpl(
 //            }
 //        return posts.find()
 //    }
+
+    override suspend fun getPost(postId: String): Post? {
+        return posts.findOneById(postId)
+    }
 }

@@ -2,11 +2,9 @@ package com.github.kuya32.plugins
 
 import com.github.kuya32.repository.follow.FollowRepository
 import com.github.kuya32.repository.user.UserRepository
-import com.github.kuya32.routes.createUser
-import com.github.kuya32.routes.followUser
-import com.github.kuya32.routes.loginUser
-import com.github.kuya32.routes.unfollowUser
+import com.github.kuya32.routes.*
 import com.github.kuya32.service.FollowService
+import com.github.kuya32.service.PostService
 import com.github.kuya32.service.UserService
 import io.ktor.routing.*
 import io.ktor.application.*
@@ -15,6 +13,7 @@ import org.koin.ktor.ext.inject
 fun Application.configureRouting() {
     val userService: UserService by inject()
     val followService: FollowService by inject()
+    val postService: PostService by inject()
 
     val jwtIssuer = environment.config.property("jwt.domain").toString()
     val jwtAudience = environment.config.property("jwt.audience").toString()
@@ -32,5 +31,10 @@ fun Application.configureRouting() {
         // Following routes
         followUser(followService)
         unfollowUser(followService)
+
+        // Post routes
+        createPostRoute(postService)
+        getPostsForFollows(postService)
+        deletePost(postService)
     }
 }

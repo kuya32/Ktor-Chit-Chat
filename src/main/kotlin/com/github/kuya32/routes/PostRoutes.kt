@@ -1,6 +1,7 @@
 package com.github.kuya32.routes
 
 import com.github.kuya32.data.requests.CreatePostRequest
+import com.github.kuya32.data.requests.DeletePostRequest
 import com.github.kuya32.plugins.userId
 import com.github.kuya32.repository.post.PostRepository
 import com.github.kuya32.service.PostService
@@ -45,6 +46,30 @@ fun Route.getPostsForFollows(
                 HttpStatusCode.OK,
                 posts
             )
+        }
+    }
+}
+
+fun Route.deletePost(
+    postService: PostService
+) {
+    authenticate {
+        delete("/api/post/delete") {
+            val request = call.receiveOrNull<DeletePostRequest>() ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+            val post = postService.getPost(request.postId)
+            if (post == null) {
+                call.respond(HttpStatusCode.NotFound)
+                return@delete
+            }
+            if (post.userId == call.userId) {
+                postService.deletePost(request.postId)
+                call.respond(HttpStatusCode.OK)
+            } else {
+                call.respond(HttpStatusCode.Unauthorized)
+            }
         }
     }
 }
