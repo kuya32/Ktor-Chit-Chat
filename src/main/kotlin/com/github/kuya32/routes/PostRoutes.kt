@@ -4,6 +4,7 @@ import com.github.kuya32.data.requests.CreatePostRequest
 import com.github.kuya32.data.requests.DeletePostRequest
 import com.github.kuya32.plugins.userId
 import com.github.kuya32.repository.post.PostRepository
+import com.github.kuya32.service.LikeService
 import com.github.kuya32.service.PostService
 import com.github.kuya32.util.Constants
 import com.github.kuya32.util.QueryParams
@@ -15,7 +16,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.createPostRoute(
+fun Route.createPost(
     postService: PostService
 ) {
     authenticate {
@@ -51,7 +52,8 @@ fun Route.getPostsForFollows(
 }
 
 fun Route.deletePost(
-    postService: PostService
+    postService: PostService,
+    likeService: LikeService
 ) {
     authenticate {
         delete("/api/post/delete") {
@@ -66,6 +68,7 @@ fun Route.deletePost(
             }
             if (post.userId == call.userId) {
                 postService.deletePost(request.postId)
+                likeService.deleteLikesForParent(request.postId)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.Unauthorized)

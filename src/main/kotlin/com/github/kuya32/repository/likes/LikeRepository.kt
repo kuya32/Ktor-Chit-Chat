@@ -6,5 +6,5 @@ interface LikeRepository {
 
     suspend fun unlikeParent(userId: String, parentId: String, parentType: Int): Boolean
 
-
+    suspend fun deleteLikesForParent(parentId: String)
 }
