@@ -23,7 +23,7 @@ class CommentService(
         val user = userRepository.getUserById(userId) ?: return ValidationEvent.UserNotFound
         commentRepository.createComment(
             Comment(
-                userId = request.userId,
+                userId = userId,
                 postId = request.postId,
                 username = user.username,
                 profileImageUrl = user.profileImageUrl,
@@ -35,12 +35,16 @@ class CommentService(
         return ValidationEvent.Success
     }
 
-//    suspend fun deleteCommentsForPost(postId: String) {
-//        commentRepository.
-//    }
-
     suspend fun deleteComment(commentId: String): Boolean {
         return commentRepository.deleteComment(commentId)
+    }
+
+    suspend fun deleteCommentsForPost(postId: String) {
+        commentRepository.deleteCommentsForPost(postId)
+    }
+
+    suspend fun getCommentsForPost(postId: String, ownUserId: String): List<Comment> {
+        return commentRepository.getCommentsForPost(postId, ownUserId)
     }
 
     suspend fun getComment(commentId: String): Comment? {

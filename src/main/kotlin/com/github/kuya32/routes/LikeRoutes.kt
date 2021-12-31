@@ -5,6 +5,7 @@ import com.github.kuya32.data.responses.BasicApiResponse
 import com.github.kuya32.service.LikeService
 import com.github.kuya32.util.ApiResponseMessages
 import com.github.kuya32.util.ApiResponseMessages.USER_NOT_FOUND
+import com.github.kuya32.util.QueryParams
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -49,7 +50,32 @@ fun Route.unlikeParent(
 ) {
     authenticate {
         delete("/api/unlike") {
-
+            val parentId = call.parameters[QueryParams.PARAM_PARENT_ID] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+            val parentType = call.parameters[QueryParams.PARAM_PARENT_TYPE]?.toIntOrNull() ?:
+            kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+            val unlikeSuccessful = likeService.unlikeParent(call.userId, parentId, parentType)
+            if (unlikeSuccessful) {
+                call.respond(
+                    HttpStatusCode.OK,
+                    BasicApiResponse(
+                        successful = true
+                    )
+                )
+            } else {
+                call.respond(
+                    HttpStatusCode.OK,
+                    BasicApiResponse(
+                        successful = false,
+                        message = USER_NOT_FOUND
+                    )
+                )
+            }
         }
     }
 }

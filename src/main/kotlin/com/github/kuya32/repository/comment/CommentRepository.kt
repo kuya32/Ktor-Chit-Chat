@@ -8,7 +8,9 @@ interface CommentRepository {
 
     suspend fun deleteComment(commentId: String): Boolean
 
-    suspend fun getCommentsForPost(postId: String): List<Comment>
+    suspend fun deleteCommentsForPost(postId: String): Boolean
+
+    suspend fun getCommentsForPost(postId: String, ownUserId: String): List<Comment>
 
     suspend fun getComment(commentId: String): Comment?
 }

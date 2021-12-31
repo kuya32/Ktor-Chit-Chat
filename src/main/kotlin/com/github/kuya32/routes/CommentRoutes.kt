@@ -76,8 +76,8 @@ fun Route.getCommentsForPost(
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-//            val comments = commentService
-            // TODO: Create comment service functions to finish route
+            val comments = commentService.getCommentsForPost(postId, call.userId)
+            call.respond(HttpStatusCode.OK, comments)
         }
     }
 }

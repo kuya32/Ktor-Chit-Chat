@@ -1,7 +1,9 @@
 package com.github.kuya32.repository.comment
 
 import com.github.kuya32.data.models.Comment
+import com.github.kuya32.data.models.Like
 import com.github.kuya32.data.models.Post
+import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
@@ -12,6 +14,7 @@ class CommentRepositoryImpl(
 
     private val comments = db.getCollection<Comment>()
     private val posts = db.getCollection<Post>()
+    private val likes = db.getCollection<Like>()
 
     override suspend fun createComment(comment: Comment) {
         comments.insertOne(comment)
@@ -24,7 +27,13 @@ class CommentRepositoryImpl(
         return deleteCount > 0
     }
 
-    override suspend fun getCommentsForPost(postId: String): List<Comment> {
+    override suspend fun deleteCommentsForPost(postId: String): Boolean {
+        return comments.deleteMany(
+            Comment::postId eq postId
+        ).wasAcknowledged()
+    }
+
+    override suspend fun getCommentsForPost(postId: String, ownUserId: String): List<Comment> {
         return comments.find(Comment::postId eq postId).toList()
     }
 
