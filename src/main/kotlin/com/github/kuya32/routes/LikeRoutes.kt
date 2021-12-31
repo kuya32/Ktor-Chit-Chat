@@ -1,10 +1,11 @@
 package com.github.kuya32.routes
 
-import com.github.kuya32.data.requests.FollowUpdateRequest
+import com.github.kuya32.data.requests.LikeUpdateRequest
 import com.github.kuya32.data.responses.BasicApiResponse
-import com.github.kuya32.repository.follow.FollowRepository
-import com.github.kuya32.service.FollowService
+import com.github.kuya32.service.LikeService
+import com.github.kuya32.util.ApiResponseMessages
 import com.github.kuya32.util.ApiResponseMessages.USER_NOT_FOUND
+import com.github.kuya32.util.QueryParams
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -12,17 +13,19 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Route.followUser(
-    followService: FollowService
+fun Route.likeParent(
+    likeService: LikeService
 ) {
     authenticate {
-        post("/api/following/follow") {
-            val request = call.receiveOrNull<FollowUpdateRequest>() ?: kotlin.run {
+        post("/api/like") {
+            val request = call.receiveOrNull<LikeUpdateRequest>() ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
 
-            if (followService.followUserIfExists(request, call.userId)) {
+            val userId = call.userId
+            val likeSuccessful = likeService.likeParent(userId, request.parentId, request.parentType)
+            if (likeSuccessful) {
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(
@@ -42,17 +45,22 @@ fun Route.followUser(
     }
 }
 
-fun Route.unfollowUser(
-    followService: FollowService
+fun Route.unlikeParent(
+    likeService: LikeService
 ) {
     authenticate {
-        delete("/api/following/unfollow") {
-            val request = call.receiveOrNull<FollowUpdateRequest>() ?: kotlin.run {
+        delete("/api/unlike") {
+            val parentId = call.parameters[QueryParams.PARAM_PARENT_ID] ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
             }
-
-            if (followService.unfollowUserIfExists(request, call.userId)) {
+            val parentType = call.parameters[QueryParams.PARAM_PARENT_TYPE]?.toIntOrNull() ?:
+            kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+            val unlikeSuccessful = likeService.unlikeParent(call.userId, parentId, parentType)
+            if (unlikeSuccessful) {
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

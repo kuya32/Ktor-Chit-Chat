@@ -1,15 +1,14 @@
 package com.github.kuya32.data.models
 
+import com.github.kuya32.data.util.ParentType
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 
-data class Post(
+data class Like(
     val userId: String,
+    val parentId: String,
+    val parentType: Int,
     val timestamp: Long,
-    val imageUrl: String,
-    val description: String,
-    val likeCount: Int = 0,
-    val commentCount: Int = 0,
     @BsonId
     val id: String = ObjectId().toString()
 )
