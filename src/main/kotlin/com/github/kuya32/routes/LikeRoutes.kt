@@ -43,3 +43,13 @@ fun Route.likeParent(
         }
     }
 }
+
+fun Route.unlikeParent(
+    likeService: LikeService
+) {
+    authenticate {
+        delete("/api/unlike") {
+
+        }
+    }
+}

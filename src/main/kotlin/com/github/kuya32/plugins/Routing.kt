@@ -3,10 +3,7 @@ package com.github.kuya32.plugins
 import com.github.kuya32.repository.follow.FollowRepository
 import com.github.kuya32.repository.user.UserRepository
 import com.github.kuya32.routes.*
-import com.github.kuya32.service.FollowService
-import com.github.kuya32.service.LikeService
-import com.github.kuya32.service.PostService
-import com.github.kuya32.service.UserService
+import com.github.kuya32.service.*
 import io.ktor.routing.*
 import io.ktor.application.*
 import org.koin.ktor.ext.inject
@@ -16,6 +13,7 @@ fun Application.configureRouting() {
     val followService: FollowService by inject()
     val postService: PostService by inject()
     val likeService: LikeService by inject()
+    val commentService: CommentService by inject()
 
     val jwtIssuer = environment.config.property("jwt.domain").toString()
     val jwtAudience = environment.config.property("jwt.audience").toString()
@@ -37,9 +35,14 @@ fun Application.configureRouting() {
         // Post routes
         createPost(postService)
         getPostsForFollows(postService)
-        deletePost(postService)
+        deletePost(postService, likeService)
 
         // Like routes
         likeParent(likeService)
+
+        // Comment routes
+        createComment(commentService)
+        deleteComment(commentService, likeService)
+        getCommentsForPost(commentService)
     }
 }
