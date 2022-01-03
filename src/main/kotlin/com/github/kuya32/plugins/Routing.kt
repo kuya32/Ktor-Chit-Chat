@@ -20,7 +20,8 @@ fun Application.configureRouting() {
     val jwtAudience = environment.config.property("jwt.audience").toString()
     val jwtSecret = environment.config.property("jwt.secret").toString()
     routing {
-        // User routes
+        // Auth routes
+        authenticate()
         createUser(userService)
         loginUser(
             userService = userService,
@@ -49,5 +50,8 @@ fun Application.configureRouting() {
 
         // Activity route
         getActivitiesForUser(activityService)
+
+        // User route
+        searchUser(userService)
     }
 }

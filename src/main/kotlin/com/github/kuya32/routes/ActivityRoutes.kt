@@ -1,7 +1,5 @@
 package com.github.kuya32.routes
 
-import com.github.kuya32.data.requests.CreateActivityRequest
-import com.github.kuya32.data.requests.DeleteActivityRequest
 import com.github.kuya32.service.ActivityService
 import com.github.kuya32.util.Constants
 import com.github.kuya32.util.QueryParams
