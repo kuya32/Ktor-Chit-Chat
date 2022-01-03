@@ -1,8 +1,12 @@
 package com.github.kuya32.routes
 
+import com.github.kuya32.data.models.Activity
 import com.github.kuya32.data.requests.FollowUpdateRequest
 import com.github.kuya32.data.responses.BasicApiResponse
+import com.github.kuya32.data.util.ActivityType
+import com.github.kuya32.data.util.ParentType
 import com.github.kuya32.repository.follow.FollowRepository
+import com.github.kuya32.service.ActivityService
 import com.github.kuya32.service.FollowService
 import com.github.kuya32.util.ApiResponseMessages.USER_NOT_FOUND
 import io.ktor.application.*
@@ -13,7 +17,8 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.followUser(
-    followService: FollowService
+    followService: FollowService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/following/follow") {
@@ -23,6 +28,15 @@ fun Route.followUser(
             }
 
             if (followService.followUserIfExists(request, call.userId)) {
+                activityService.createActivity(
+                    Activity(
+                        timestamp = System.currentTimeMillis(),
+                        parentId = "",
+                        byUserId = call.userId,
+                        toUserId = request.followedUserId,
+                        type = ActivityType.FollowedUser.type,
+                    )
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

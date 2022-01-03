@@ -2,6 +2,9 @@ package com.github.kuya32.routes
 
 import com.github.kuya32.data.requests.LikeUpdateRequest
 import com.github.kuya32.data.responses.BasicApiResponse
+import com.github.kuya32.data.util.ActivityType
+import com.github.kuya32.data.util.ParentType
+import com.github.kuya32.service.ActivityService
 import com.github.kuya32.service.LikeService
 import com.github.kuya32.util.ApiResponseMessages
 import com.github.kuya32.util.ApiResponseMessages.USER_NOT_FOUND
@@ -14,7 +17,8 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.likeParent(
-    likeService: LikeService
+    likeService: LikeService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/like") {
@@ -26,6 +30,11 @@ fun Route.likeParent(
             val userId = call.userId
             val likeSuccessful = likeService.likeParent(userId, request.parentId, request.parentType)
             if (likeSuccessful) {
+                activityService.addLikeActivity(
+                    byUserId = userId,
+                    parentId = request.parentId,
+                    parentType = ParentType.fromType(request.parentType)
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

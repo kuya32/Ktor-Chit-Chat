@@ -1,5 +1,7 @@
 package com.github.kuya32.di
 
+import com.github.kuya32.repository.activity.ActivityRepository
+import com.github.kuya32.repository.activity.ActivityRepositoryImpl
 import com.github.kuya32.repository.comment.CommentRepository
 import com.github.kuya32.repository.comment.CommentRepositoryImpl
 import com.github.kuya32.repository.follow.FollowRepository
@@ -36,10 +38,14 @@ val mainModule = module {
     single<CommentRepository> {
         CommentRepositoryImpl(get())
     }
+    single<ActivityRepository> {
+        ActivityRepositoryImpl(get())
+    }
 
     single { UserService(get()) }
     single { FollowService(get()) }
     single { PostService(get()) }
     single { LikeService(get()) }
     single { CommentService(get(), get()) }
+    single { ActivityService(get(), get(), get()) }
 }
