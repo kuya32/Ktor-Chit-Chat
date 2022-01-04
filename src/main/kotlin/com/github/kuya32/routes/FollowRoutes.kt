@@ -20,36 +20,38 @@ fun Route.followUser(
     followService: FollowService,
     activityService: ActivityService
 ) {
-    post("/api/following/follow") {
-        val request = call.receiveOrNull<FollowUpdateRequest>() ?: kotlin.run {
-            call.respond(HttpStatusCode.BadRequest)
-            return@post
-        }
+    authenticate {
+        post("/api/following/follow") {
+            val request = call.receiveOrNull<FollowUpdateRequest>() ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
 
-        if (followService.followUserIfExists(request, call.userId)) {
-            activityService.createActivity(
-                Activity(
-                    timestamp = System.currentTimeMillis(),
-                    parentId = "",
-                    byUserId = call.userId,
-                    toUserId = request.followedUserId,
-                    type = ActivityType.FollowedUser.type,
+            if (followService.followUserIfExists(request, call.userId)) {
+                activityService.createActivity(
+                    Activity(
+                        timestamp = System.currentTimeMillis(),
+                        parentId = "",
+                        byUserId = call.userId,
+                        toUserId = request.followedUserId,
+                        type = ActivityType.FollowedUser.type,
+                    )
                 )
-            )
-            call.respond(
-                HttpStatusCode.OK,
-                BasicApiResponse<Unit>(
-                    successful = true
+                call.respond(
+                    HttpStatusCode.OK,
+                    BasicApiResponse<Unit>(
+                        successful = true
+                    )
                 )
-            )
-        } else {
-            call.respond(
-                HttpStatusCode.OK,
-                BasicApiResponse<Unit>(
-                    successful = false,
-                    message = USER_NOT_FOUND
+            } else {
+                call.respond(
+                    HttpStatusCode.OK,
+                    BasicApiResponse<Unit>(
+                        successful = false,
+                        message = call.userId
+                    )
                 )
-            )
+            }
         }
     }
 }

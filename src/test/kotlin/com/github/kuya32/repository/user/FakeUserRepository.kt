@@ -22,4 +22,16 @@ class FakeUserRepository : UserRepository {
         val user = getUserByEmail(email)
         return user?.password == enteredPassword
     }
+
+    override suspend fun doesEmailBelongToUserId(email: String, userId: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun searchForUsers(query: String): List<User> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getUsers(userIds: List<String>): List<User> {
+        TODO("Not yet implemented")
+    }
 }

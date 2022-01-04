@@ -7,6 +7,8 @@ import com.github.kuya32.service.*
 import io.ktor.routing.*
 import io.ktor.application.*
 import org.koin.ktor.ext.inject
+import org.litote.kmongo.util.idValue
+import org.litote.kmongo.variable
 
 fun Application.configureRouting() {
     val userService: UserService by inject()
@@ -16,9 +18,9 @@ fun Application.configureRouting() {
     val commentService: CommentService by inject()
     val activityService: ActivityService by inject()
 
-    val jwtIssuer = environment.config.property("jwt.domain").toString()
-    val jwtAudience = environment.config.property("jwt.audience").toString()
-    val jwtSecret = environment.config.property("jwt.secret").toString()
+    val jwtIssuer = environment.config.property("jwt.domain").getString()
+    val jwtAudience = environment.config.property("jwt.audience").getString()
+    val jwtSecret = environment.config.property("jwt.secret").getString()
     routing {
         // Auth routes
         authenticate()

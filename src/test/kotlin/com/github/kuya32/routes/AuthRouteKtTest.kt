@@ -46,7 +46,7 @@ internal class AuthRouteKtTest : KoinTest {
         withTestApplication(
             moduleFunction = {
                 install(Routing) {
-                    createUser(userRepository)
+//                    createUser(userRepository)
                 }
             }
         ) {
@@ -76,7 +76,7 @@ internal class AuthRouteKtTest : KoinTest {
             moduleFunction = {
                 configureSerialization()
                 install(Routing) {
-                    createUser(userRepository)
+//                    createUser(userRepository)
                 }
             }
         ) {
@@ -109,7 +109,7 @@ internal class AuthRouteKtTest : KoinTest {
             moduleFunction = {
                 configureSerialization()
                 install(Routing) {
-                    createUser(userRepository)
+//                    createUser(userRepository)
                 }
             }
         ) {
@@ -142,7 +142,7 @@ internal class AuthRouteKtTest : KoinTest {
             moduleFunction = {
                 configureSerialization()
                 install(Routing) {
-                    createUser(userRepository)
+//                    createUser(userRepository)
                 }
             }
         ) {

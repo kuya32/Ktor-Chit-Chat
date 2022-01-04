@@ -2,8 +2,6 @@ package com.github.kuya32.routes
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.github.kuya32.data.models.User
-import com.github.kuya32.repository.user.UserRepository
 import com.github.kuya32.data.requests.CreateAccountRequest
 import com.github.kuya32.data.requests.LoginRequest
 import com.github.kuya32.data.responses.AuthResponse
@@ -18,7 +16,6 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.koin.ktor.ext.get
 import java.util.*
 
 fun Route.createUser(userService: UserService) {
@@ -83,7 +80,7 @@ fun Route.loginUser(
             actualPassword = user.password
         )
         if (isCorrectPassword) {
-            val expiresIn = 1000L * 60L * 60L * 24L * 265L
+            val expiresIn = 1000L * 60L * 60L * 24L * 365L
             val token = JWT.create()
                 .withClaim("userId", user.id)
                 .withIssuer(jwtIssuer)
