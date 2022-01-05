@@ -3,6 +3,7 @@ package com.github.kuya32.service
 import com.github.kuya32.data.models.User
 import com.github.kuya32.data.requests.CreateAccountRequest
 import com.github.kuya32.data.responses.BasicApiResponse
+import com.github.kuya32.data.responses.ProfileResponse
 import com.github.kuya32.data.responses.UserResponseItem
 import com.github.kuya32.repository.follow.FollowRepository
 import com.github.kuya32.repository.user.UserRepository
@@ -39,6 +40,28 @@ class UserService(
                 isFollowing = isFollowing
             )
         }
+    }
+
+    suspend fun getUserProfile(userId: String, callerUserId: String): ProfileResponse? {
+        val user = userRepository.getUserById(userId) ?: return null
+        return ProfileResponse(
+            userId = user.id,
+            username = user.username,
+            bio = user.bio,
+            followerCount = user.followerCount,
+            followingCount = user.followingCount,
+            postCount = user.postCount,
+            profilePictureUrl = user.profileImageUrl,
+            bannerUrl = "",
+            topSkills = user.skills,
+            githubUrl = user.githubUrl,
+            instagramUrl = user.instagramUrl,
+            linkedInUrl = user.linkedInUrl,
+            isOwnProfile = userId == callerUserId,
+            isFollowing = if (userId != callerUserId) {
+                followRepository.doesUserFollow(callerUserId, userId)
+            } else false
+        )
     }
 
     suspend fun createUser(request: CreateAccountRequest) {

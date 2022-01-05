@@ -1,6 +1,7 @@
 package com.github.kuya32.repository.user
 
 import com.github.kuya32.data.models.User
+import com.github.kuya32.data.requests.UpdateProfileRequest
 import org.litote.kmongo.`in`
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
@@ -35,6 +36,33 @@ class UserRepositoryImpl(
 
     override suspend fun doesEmailBelongToUserId(email: String, userId: String): Boolean {
         return users.findOneById(userId)?.email == email
+    }
+
+    override suspend fun updateUser(
+        userId: String,
+        profileImageUrl: String?,
+        bannerUrl: String?,
+        updateProfileRequest: UpdateProfileRequest
+    ): Boolean {
+        val user = users.findOneById(userId) ?: return false
+        return users.updateOneById(
+            id = userId,
+            update = User(
+                email = user.email,
+                username = updateProfileRequest.username,
+                password = user.password,
+                profileImageUrl = profileImageUrl ?: user.profileImageUrl,
+                bio = updateProfileRequest.bio,
+                skills = updateProfileRequest.skills,
+                githubUrl = updateProfileRequest.githubUrl,
+                instagramUrl = updateProfileRequest.instagramUrl,
+                linkedInUrl = updateProfileRequest.linkedInUrl,
+                followerCount = user.followerCount,
+                followingCount = user.followingCount,
+                postCount = user.postCount,
+                id = user.id
+            )
+        ).wasAcknowledged()
     }
 
     override suspend fun searchForUsers(query: String): List<User> {

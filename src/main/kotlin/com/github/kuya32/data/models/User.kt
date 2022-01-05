@@ -10,7 +10,7 @@ data class User(
     val password: String,
     val profileImageUrl: String,
     val bio: String,
-    val skills: List<Skill> = listOf(),
+    val skills: List<String> = listOf(),
     val githubUrl: String?,
     val instagramUrl: String?,
     val linkedInUrl: String?,

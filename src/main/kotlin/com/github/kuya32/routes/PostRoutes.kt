@@ -16,6 +16,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.koin.ktor.ext.get
 
 fun Route.createPost(
     postService: PostService
@@ -26,6 +27,30 @@ fun Route.createPost(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
+        }
+    }
+}
+
+fun Route.getPostsForProfile(
+    postService: PostService
+) {
+    authenticate {
+        get("/api/user/posts") {
+            val userId = call.parameters[QueryParams.PARAM_USER_ID]
+            val page = call.parameters[QueryParams.PARAM_PAGE]?.toIntOrNull() ?: 0
+            val pageSize = call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull() ?: Constants
+            .DEFAULT_PAGE_SIZE
+
+            val posts = postService.getPostsForProfile(
+                ownUserId = call.userId,
+                userId = userId ?: call.userId,
+                page = page,
+                pageSize = pageSize
+            )
+            call.respond(
+                HttpStatusCode.OK,
+                posts
+            )
         }
     }
 }

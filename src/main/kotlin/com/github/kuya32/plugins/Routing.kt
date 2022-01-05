@@ -39,6 +39,7 @@ fun Application.configureRouting() {
         // Post routes
         createPost(postService)
         getPostsForFollows(postService)
+        getPostsForProfile(postService)
         deletePost(postService, likeService, commentService)
 
         // Like routes
@@ -55,5 +56,6 @@ fun Application.configureRouting() {
 
         // User route
         searchUser(userService)
+        getUserProfile(userService)
     }
 }
