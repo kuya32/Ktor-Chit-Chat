@@ -58,6 +58,7 @@ fun Application.configureRouting() {
         // User route
         searchUser(userService)
         getUserProfile(userService)
+        updateUserProfile(userService)
 
         static {
             resource("static")

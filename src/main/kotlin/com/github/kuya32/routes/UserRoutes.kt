@@ -5,7 +5,11 @@ import com.github.kuya32.data.requests.UpdateProfileRequest
 import com.github.kuya32.data.responses.BasicApiResponse
 import com.github.kuya32.service.UserService
 import com.github.kuya32.util.ApiResponseMessages
+import com.github.kuya32.util.Constants.BANNER_IMAGE_PATH
+import com.github.kuya32.util.Constants.BASE_URL
+import com.github.kuya32.util.Constants.PROFILE_PICTURE_PATH
 import com.github.kuya32.util.QueryParams
+import com.github.kuya32.util.save
 import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -16,6 +20,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.inject
+import java.io.File
 
 fun Route.searchUser(userService: UserService) {
     authenticate {
@@ -84,13 +89,43 @@ fun Route.updateUserProfile(userService: UserService) {
                     }
                     is PartData.FileItem -> {
                         if (partData.name == "profile_picture") {
-                            profilePictureFileName = partData.save
+                            profilePictureFileName = partData.save(PROFILE_PICTURE_PATH)
                         } else if (partData.name == "banner_image") {
-                            bannerImageFileName = partData
+                            bannerImageFileName = partData.save(BANNER_IMAGE_PATH)
                         }
                     }
                     is PartData.BinaryItem -> Unit
                 }
+            }
+
+            val profilePictureUrl = "${BASE_URL}profile_pictures/$profilePictureFileName"
+            val bannerImageUrl = "${BASE_URL}banner_image/$bannerImageFileName}"
+
+            updateProfileRequest?.let { request ->
+                val updateAcknowledge = userService.updateUser(
+                    userId = call.userId,
+                    profileImageUrl = if (profilePictureFileName == null) {
+                        null
+                    } else profilePictureUrl,
+                    bannerUrl = if (bannerImageFileName == null) {
+                        null
+                    } else bannerImageUrl,
+                    updateProfileRequest = request
+                )
+                if (updateAcknowledge) {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        BasicApiResponse<Unit>(
+                            successful = true
+                        )
+                    )
+                } else {
+                    File("${PROFILE_PICTURE_PATH}/$profilePictureFileName").delete()
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
+            } ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@put
             }
         }
     }

@@ -2,6 +2,7 @@ package com.github.kuya32.service
 
 import com.github.kuya32.data.models.User
 import com.github.kuya32.data.requests.CreateAccountRequest
+import com.github.kuya32.data.requests.UpdateProfileRequest
 import com.github.kuya32.data.responses.BasicApiResponse
 import com.github.kuya32.data.responses.ProfileResponse
 import com.github.kuya32.data.responses.UserResponseItem
@@ -26,6 +27,15 @@ class UserService(
 
     fun isValidPassword(enteredPassword: String, actualPassword: String): Boolean {
         return enteredPassword == actualPassword
+    }
+
+    suspend fun updateUser(
+        userId: String,
+        profileImageUrl: String?,
+        bannerUrl: String?,
+        updateProfileRequest: UpdateProfileRequest
+    ): Boolean {
+        return userRepository.updateUser(userId, profileImageUrl, bannerUrl, updateProfileRequest)
     }
 
     suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
