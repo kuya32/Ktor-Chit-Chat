@@ -6,6 +6,7 @@ import com.github.kuya32.routes.*
 import com.github.kuya32.service.*
 import io.ktor.routing.*
 import io.ktor.application.*
+import io.ktor.http.content.*
 import org.koin.ktor.ext.inject
 import org.litote.kmongo.util.idValue
 import org.litote.kmongo.variable
@@ -57,5 +58,9 @@ fun Application.configureRouting() {
         // User route
         searchUser(userService)
         getUserProfile(userService)
+
+        static {
+            resource("static")
+        }
     }
 }

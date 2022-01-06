@@ -14,6 +14,7 @@ import com.github.kuya32.repository.user.UserRepository
 import com.github.kuya32.repository.user.UserRepositoryImpl
 import com.github.kuya32.service.*
 import com.github.kuya32.util.Constants
+import com.google.gson.Gson
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
@@ -48,4 +49,6 @@ val mainModule = module {
     single { LikeService(get()) }
     single { CommentService(get(), get()) }
     single { ActivityService(get(), get(), get()) }
+
+    single { Gson() }
 }
