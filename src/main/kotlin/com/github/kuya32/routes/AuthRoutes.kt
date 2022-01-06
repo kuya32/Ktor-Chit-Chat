@@ -2,8 +2,6 @@ package com.github.kuya32.routes
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.github.kuya32.data.models.User
-import com.github.kuya32.repository.user.UserRepository
 import com.github.kuya32.data.requests.CreateAccountRequest
 import com.github.kuya32.data.requests.LoginRequest
 import com.github.kuya32.data.responses.AuthResponse
@@ -13,6 +11,7 @@ import com.github.kuya32.util.ApiResponseMessages.FIELDS_BLANK
 import com.github.kuya32.util.ApiResponseMessages.INVALID_CREDENTIALS
 import com.github.kuya32.util.ApiResponseMessages.USER_ALREADY_EXISTS
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -28,20 +27,20 @@ fun Route.createUser(userService: UserService) {
 
         if (userService.doesUserWithEmailExist(request.email)) {
             call.respond(
-                BasicApiResponse(false, USER_ALREADY_EXISTS)
+                BasicApiResponse<Unit>(false, USER_ALREADY_EXISTS)
             )
             return@post
         }
         when (userService.validateCreatedAccountRequest(request)) {
             is UserService.ValidateEvent.ErrorFieldEmpty -> {
                 call.respond(
-                    BasicApiResponse(false, FIELDS_BLANK)
+                    BasicApiResponse<Unit>(false, FIELDS_BLANK)
                 )
             }
             is UserService.ValidateEvent.Success -> {
                 userService.createUser(request)
                 call.respond(
-                    BasicApiResponse(true)
+                    BasicApiResponse<Unit>(true)
                 )
             }
         }
@@ -68,7 +67,7 @@ fun Route.loginUser(
         val user = userService.getUserByEmail(request.email) ?: kotlin.run {
             call.respond(
                 HttpStatusCode.OK,
-                BasicApiResponse(
+                BasicApiResponse<Unit>(
                     successful = false,
                     message = INVALID_CREDENTIALS
                 )
@@ -81,7 +80,7 @@ fun Route.loginUser(
             actualPassword = user.password
         )
         if (isCorrectPassword) {
-            val expiresIn = 1000L * 60L * 60L * 24L * 265L
+            val expiresIn = 1000L * 60L * 60L * 24L * 365L
             val token = JWT.create()
                 .withClaim("userId", user.id)
                 .withIssuer(jwtIssuer)
@@ -90,16 +89,30 @@ fun Route.loginUser(
                 .sign(Algorithm.HMAC256(jwtSecret))
             call.respond(
                 HttpStatusCode.OK,
-                AuthResponse(token)
+                BasicApiResponse(
+                    successful = true,
+                    data = AuthResponse(
+                        userId = user.id,
+                        token = token
+                    )
+                )
             )
         } else {
             call.respond(
                 HttpStatusCode.OK,
-                BasicApiResponse(
+                BasicApiResponse<Unit>(
                     successful = false,
                     message = INVALID_CREDENTIALS
                 )
             )
+        }
+    }
+}
+
+fun Route.authenticate() {
+    authenticate {
+        get("/api/user/authenticate") {
+            call.respond(HttpStatusCode.OK)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.github.kuya32.service
 
 import com.github.kuya32.data.models.Post
 import com.github.kuya32.data.requests.CreatePostRequest
+import com.github.kuya32.data.responses.PostResponse
 import com.github.kuya32.repository.post.PostRepository
 import com.github.kuya32.util.Constants
 
@@ -26,6 +27,15 @@ class PostService(
         pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<Post> {
         return postRepository.getPostsByFollow(ownUserId, page, pageSize)
+    }
+
+    suspend fun getPostsForProfile(
+        ownUserId: String,
+        userId: String,
+        page: Int = 0,
+        pageSize: Int = Constants.DEFAULT_PAGE_SIZE
+    ): List<PostResponse> {
+        return postRepository.getPostsForProfile(ownUserId, userId, page, pageSize)
     }
 
     suspend fun getPost(postId: String): Post? = postRepository.getPost(postId)

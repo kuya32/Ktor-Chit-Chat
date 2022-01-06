@@ -3,6 +3,7 @@ package com.github.kuya32.routes
 import com.github.kuya32.data.requests.CreateCommentRequest
 import com.github.kuya32.data.requests.DeleteCommentRequest
 import com.github.kuya32.data.responses.BasicApiResponse
+import com.github.kuya32.service.ActivityService
 import com.github.kuya32.service.CommentService
 import com.github.kuya32.service.LikeService
 import com.github.kuya32.service.UserService
@@ -16,7 +17,8 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.createComment(
-    commentService: CommentService
+    commentService: CommentService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/comment/create") {
@@ -30,7 +32,7 @@ fun Route.createComment(
                 is CommentService.ValidationEvent.ErrorFieldEmpty -> {
                     call.respond(
                         HttpStatusCode.OK,
-                        BasicApiResponse(
+                        BasicApiResponse<Unit>(
                             successful = false,
                             message = ApiResponseMessages.FIELDS_BLANK
                         )
@@ -39,7 +41,7 @@ fun Route.createComment(
                 is CommentService.ValidationEvent.UserNotFound -> {
                     call.respond(
                         HttpStatusCode.OK,
-                        BasicApiResponse(
+                        BasicApiResponse<Unit>(
                             successful = false,
                             message = ApiResponseMessages.USER_NOT_FOUND
                         )
@@ -48,16 +50,20 @@ fun Route.createComment(
                 is CommentService.ValidationEvent.ErrorCommentTooLong -> {
                     call.respond(
                         HttpStatusCode.OK,
-                        BasicApiResponse(
+                        BasicApiResponse<Unit>(
                             successful = false,
                             message = ApiResponseMessages.COMMENT_TOO_LONG
                         )
                     )
                 }
                 is CommentService.ValidationEvent.Success -> {
+                    activityService.addCommentActivity(
+                        byUserId = userId,
+                        postId = request.postId
+                    )
                     call.respond(
                         HttpStatusCode.OK,
-                        BasicApiResponse(
+                        BasicApiResponse<Unit>(
                             successful = true
                         )
                     )
@@ -102,14 +108,14 @@ fun Route.deleteComment(
                 likeService.deleteLikesForParent(request.commentId)
                 call.respond(
                     HttpStatusCode.OK,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = true
                     )
                 )
             } else {
                 call.respond(
                     HttpStatusCode.NotFound,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = false,
                         message = ApiResponseMessages.OBJECT_NOT_FOUND
                     )

@@ -6,7 +6,10 @@ import com.github.kuya32.routes.*
 import com.github.kuya32.service.*
 import io.ktor.routing.*
 import io.ktor.application.*
+import io.ktor.http.content.*
 import org.koin.ktor.ext.inject
+import org.litote.kmongo.util.idValue
+import org.litote.kmongo.variable
 
 fun Application.configureRouting() {
     val userService: UserService by inject()
@@ -14,12 +17,14 @@ fun Application.configureRouting() {
     val postService: PostService by inject()
     val likeService: LikeService by inject()
     val commentService: CommentService by inject()
+    val activityService: ActivityService by inject()
 
-    val jwtIssuer = environment.config.property("jwt.domain").toString()
-    val jwtAudience = environment.config.property("jwt.audience").toString()
-    val jwtSecret = environment.config.property("jwt.secret").toString()
+    val jwtIssuer = environment.config.property("jwt.domain").getString()
+    val jwtAudience = environment.config.property("jwt.audience").getString()
+    val jwtSecret = environment.config.property("jwt.secret").getString()
     routing {
-        // User routes
+        // Auth routes
+        authenticate()
         createUser(userService)
         loginUser(
             userService = userService,
@@ -29,21 +34,33 @@ fun Application.configureRouting() {
         )
 
         // Following routes
-        followUser(followService)
+        followUser(followService, activityService)
         unfollowUser(followService)
 
         // Post routes
         createPost(postService)
         getPostsForFollows(postService)
-        deletePost(postService, likeService)
+        getPostsForProfile(postService)
+        deletePost(postService, likeService, commentService)
 
         // Like routes
-        likeParent(likeService)
+        likeParent(likeService, activityService)
         unlikeParent(likeService)
 
         // Comment routes
-        createComment(commentService)
+        createComment(commentService, activityService)
         deleteComment(commentService, likeService)
         getCommentsForPost(commentService)
+
+        // Activity route
+        getActivitiesForUser(activityService)
+
+        // User route
+        searchUser(userService)
+        getUserProfile(userService)
+
+        static {
+            resource("static")
+        }
     }
 }
