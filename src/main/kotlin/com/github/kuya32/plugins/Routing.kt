@@ -46,6 +46,7 @@ fun Application.configureRouting() {
         // Like routes
         likeParent(likeService, activityService)
         unlikeParent(likeService)
+        getLikesForParent(likeService)
 
         // Comment routes
         createComment(commentService, activityService)
@@ -58,6 +59,7 @@ fun Application.configureRouting() {
         // User route
         searchUser(userService)
         getUserProfile(userService)
+        updateUserProfile(userService)
 
         static {
             resource("static")

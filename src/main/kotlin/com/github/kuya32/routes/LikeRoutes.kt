@@ -15,6 +15,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.koin.ktor.ext.get
 
 fun Route.likeParent(
     likeService: LikeService,
@@ -85,6 +86,25 @@ fun Route.unlikeParent(
                     )
                 )
             }
+        }
+    }
+}
+
+fun Route.getLikesForParent(likeService: LikeService) {
+    authenticate {
+        get("/api/like/parent") {
+            val parentId = call.parameters[QueryParams.PARAM_PARENT_ID] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val usersWhoLikedParent = likeService.getUsersWhoLikedParent(
+                parentId = parentId,
+                userId = call.userId
+            )
+            call.respond(
+                HttpStatusCode.OK,
+                usersWhoLikedParent
+            )
         }
     }
 }

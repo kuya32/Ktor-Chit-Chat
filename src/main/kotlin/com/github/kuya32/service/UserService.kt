@@ -2,6 +2,7 @@ package com.github.kuya32.service
 
 import com.github.kuya32.data.models.User
 import com.github.kuya32.data.requests.CreateAccountRequest
+import com.github.kuya32.data.requests.UpdateProfileRequest
 import com.github.kuya32.data.responses.BasicApiResponse
 import com.github.kuya32.data.responses.ProfileResponse
 import com.github.kuya32.data.responses.UserResponseItem
@@ -28,17 +29,27 @@ class UserService(
         return enteredPassword == actualPassword
     }
 
+    suspend fun updateUser(
+        userId: String,
+        profileImageUrl: String?,
+        bannerUrl: String?,
+        updateProfileRequest: UpdateProfileRequest
+    ): Boolean {
+        return userRepository.updateUser(userId, profileImageUrl, bannerUrl, updateProfileRequest)
+    }
+
     suspend fun searchForUsers(query: String, userId: String): List<UserResponseItem> {
         val users = userRepository.searchForUsers(query)
         val followsByUser = followRepository.getFollowsByUser(userId)
         return users.map { user ->
             val isFollowing = followsByUser.find { it.followedUserId == user.id } != null
             UserResponseItem(
+                userId = user.id,
                 username = user.username,
                 profilePictureUrl = user.profileImageUrl,
                 bio = user.bio,
                 isFollowing = isFollowing
-            )
+                )
         }
     }
 
